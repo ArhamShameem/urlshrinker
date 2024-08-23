@@ -14,7 +14,7 @@ import * as Yup from "yup";
 import useFetch from "@/hooks/use-fetch";
 import { signup } from "@/db/apiAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { urlState } from "@/context";
+import { UrlState } from "@/context";
 
 const Signup = () => {
   const [errors, setErrors] = useState({});
@@ -33,32 +33,32 @@ const Signup = () => {
     const { name, value, files } = e.target;
     setFormData((prevState) => ({
       ...prevState,
-      [name]:files?files[0]: value,
+      [name]: files ? files[0] : value,
     }));
   };
 
   const { data, error, loading, fn: fnSignup } = useFetch(signup, formData);
-  const { fetchUser } = urlState();
+  const { fetchUser } = UrlState();
 
   useEffect(() => {
     if (error === null && data) {
       navigate(`/dashboard?${longlink ? `createNew=${longlink}` : ""}`);
       fetchUser();
     }
-  }, [error,loading]);
+  }, [error, loading]);
 
   const handleSignup = async () => {
     setErrors({});
     try {
       const schema = Yup.object().shape({
-        name:Yup.string().required("Name is required"),
+        name: Yup.string().required("Name is required"),
         email: Yup.string()
           .email("Invalid email")
           .required("Email is required"),
         password: Yup.string()
           .min(6, "Password must be at least 6 characters long")
           .required("Password is required"),
-          profile_pic:Yup.mixed().required("Profile picture is required")
+        profile_pic: Yup.mixed().required("Profile picture is required"),
       });
 
       await schema.validate(formData, { abortEarly: false });
